@@ -1,12 +1,18 @@
 package com.taghavi.firebasewithkotlincoroutinesandflow
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.coroutines.*
+import com.taghavi.firebasewithkotlincoroutinesandflow.databinding.ActivityMainBinding
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
+@InternalCoroutinesApi
+@ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,14 +20,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this, MainViewModelFactory())
-            .get(MainViewModel::class.java)
+                .get(MainViewModel::class.java)
     }
 
     private suspend fun loadPosts() {
         viewModel.getAllPosts().collect { state ->
             when (state) {
                 is State.Loading -> {
-                    showToast("Loading")
+                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
                 }
 
                 is State.Success -> {
@@ -32,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                     binding.textPostContent.text = postText
                 }
 
-                is State.Failed -> showToast("Failed! ${state.message}")
+                is State.Failed -> Toast.makeText(this, "Failed! ${state.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
